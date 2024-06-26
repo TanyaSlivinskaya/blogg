@@ -1,85 +1,58 @@
+{% extends 'blog/base.html' %}
 {% load static %}
-<html>
-<head>
-    <title>Мой блог</title>
-    <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
-    <link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css" media="all"/>
+{% block title %}{{ post.title }}{% endblock %}
+{% block content %}
 
-    <link rel="shortcut icon" href="css/images/favicon.ico"/>
-
-</head>
-<body>
-<div class="shell">
-    <div class="border">
-
-        <div id="navigation">
-            <ul>
-                <li><a href="/" class="active">Главная</a></li>
-                <li><a href="/admin">Админ панель</a></li>
-
-            </ul>
-        </div>
-
-        <div id="main">
-            <div id="content" class="left">
-
-                <div class="projects">
-                    <h3>{{ post.title }}</h3>
-                    <p align="center">
-                        <img src="{{ post.img.url }}" width="50%"/>
-                    </p>
-                    <div class="item">
-                        <div class="text left">
-                            <h4>{{ post.title }}</h4>
-                            <p>{{ post.description }}</p>
-                            <p>Автор: {{ post.author }}</p>
-                        </div>
-                        <div class="cl">&nbsp;</div>
-                    </div>
-
-                </div>
+<div id="content" class="left">
+    <div class="projects">
+        <h3>{{ post.title }}</h3>
+        {% if post.img %}
+        <p align="center">
+            <img src="{{ post.img.url }}" width="50%"/>
+        </p>
+        {% endif %}
+        <div class="item">
+            <div class="text left">
+                <p>{{ post.description }}</p>
+                <p>Автор: {{ post.author.username }}</p>
             </div>
-
             <div class="cl">&nbsp;</div>
         </div>
-    </div>
-    <div class="form-comment">
-        <h3>Оставить комментарий</h3>
-        <div>
-            <form action="{% url 'add_comments' post.id %}" method="post">
-                {% csrf_token %}
-                <div>
-                    <label>Ваш комментарий</label>
-                    <textarea name="text_comments"></textarea>
-                </div>
-                <div>
-                    <label>Ваш имя</label>
-                    <input type="text" name="name">
-                </div>
-                <div>
-                    <label>Ваш Email</label>
-                    <input email="email" name="email">
-                </div>
-                <div>
-                    <input type="submit">
-                </div>
-            </form>
-        </div>
-    </div>
 
-    <div>
-        {% for comment in post.comments_set.all %}
-        <div class="view-comment">
-            <h4> {{comment.name}}</h4>
-            <p>
-                {{comment.text.comments}}
-            </p>
+
+        {% if user.is_authenticated and user == post.author %}
+        <div class="post-actions">
+            <a href="{% url 'post_edit' post_id=post.id %}">Редактировать</a>
+            <a href="{% url 'post_delete' post_id=post.id %}">Удалить</a>
         </div>
-        {% endfor %}
-    </div>
-    <div id="footer">
-        <p class="copy right">Copyright &copy; 2022 </p>
+        {% endif %}
     </div>
 </div>
-</body>
-</html>
+<div class="cl">&nbsp;</div>
+
+<div class="form-comment">
+    <h3>Оставить комментарий</h3>
+    <div>
+        <form action="{% url 'add_comments' post.id %}" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div>
+                <input type="submit" value="Отправить">
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <h3>Комментарии</h3>
+    {% for comment in post.comments_set.all %}
+    <div class="view-comment">
+        <h4>{{ comment.name }}</h4>
+        <p>{{ comment.text_comments }}</p>
+    </div>
+    <hr>
+    {% empty %}
+    <p>Нет комментариев.</p>
+    {% endfor %}
+</div>
+{% endblock %}

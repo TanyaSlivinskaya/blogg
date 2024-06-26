@@ -1,19 +1,22 @@
 from django.db import models
+from django.contrib.auth.models import User
+
 
 class Post(models.Model):
-    '''данные о посте'''
+    '''Данные о записи (посте)'''
     title = models.CharField('Заголовок записи', max_length=100)
     description = models.TextField('Текст записи')
-    author = models.CharField('Имя автора', max_length=100)
-    date = models.DateTimeField('Дата публикации')
-    img = models.ImageField ('Изображение', upload_to='image/%Y')
+    author = models.ForeignKey(User, verbose_name='Автор', on_delete=models.CASCADE)
+    data = models.DateField('Дата публикации')
+    img = models.ImageField('Изображение', upload_to='image/%Y', blank=True, null=True)
 
-    def __str__(self):
-        return f'{self.title}, {self.author}'
+    def str(self):
+        return f'{self.title}, {self.author.username}'
 
-    class Meta():
+    class Meta:
         verbose_name = 'Запись'
         verbose_name_plural = 'Записи'
+
 
 class Comments(models.Model):
     '''Комментарий'''
@@ -28,4 +31,3 @@ class Comments(models.Model):
     class Meta:
         verbose_name = 'Коментарий'
         verbose_name_plural = 'Коментарии'
-

@@ -1,0 +1,40 @@
+{% load static %}
+
+<html>
+<head>
+    <title>Вход - Мой блог</title>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" href="{% static 'css/style.css' %}" type="text/css" media="all" />
+    <link rel="shortcut icon" href="{% static 'css/images/favicon.ico' %}" />
+</head>
+<body>
+<div class="shell">
+    <div class="border">
+        <div id="navigation">
+            <ul>
+                <li><a href="/" class="active">Главная</a></li>
+                <li><a href="/admin">Админ панель</a></li>
+                <li><a href="/add_post">Добавить пост</a></li>
+                {% if user.is_authenticated %}
+                    <li><a href="/logout">Выход</a></li>
+                {% else %}
+                    <li><a href="/login">Вход</a></li>
+                    <li><a href="/register">Регистрация</a></li>
+                {% endif %}
+            </ul>
+        </div>
+        <div id="main">
+            <h2>Вход</h2>
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit">Войти</button>
+            </form>
+        </div>
+        <div id="footer">
+            <p class="copy right">Copyright &copy; 2022</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>
